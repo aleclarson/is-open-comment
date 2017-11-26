@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
-const huey = require('huey')
+const {test} = require('testpass')
 
 const isOpenComment = require('.')
 
+const tested = {}
 const tests = [
   // Basic tests
   [' ', false],
@@ -42,55 +43,35 @@ const tests = [
   ['/* // */', false],
 ]
 
-// Run the tests.
-runTests()
-
-// Enable watch mode.
-if (~process.argv.indexOf('-w')) {
-  require('fs').watch(process.cwd(), (event, file) => {
-    if (/\.js$/.test(file)) {
-      // Clear the screen, run the tests again.
-      process.stdout.write('\033[2J')
-      process.stdout.write('\033[0f')
-      runTests()
-    }
-  })
-}
-
-function runTests() {
-  const tested = {}
-  function dedupe(value) {
-    if (tested.hasOwnProperty(value)) {
-      if (~process.argv.indexOf('-d')) {
-        console.log(huey.yellow('Dupe: ') + value)
-      }
-      return false
-    }
+function match(value, expected) {
+  // Avoid duplicate tests.
+  if (!tested.hasOwnProperty(value)) {
     tested[value] = 1
-    return true
+    test(`"${value}"`, (t) => {
+      t.eq(isOpenComment(value), expected)
+    })
   }
+}
 
-  tests.forEach(test => {
-    const [value, expected] = test
-    if (dedupe(value)) {
-      runTest(value, expected)
-    }
+tests.forEach(([value, expected]) => {
+  match(value, expected)
 
-    // Test without whitespace.
-    const value2 = value.replace(/\s/g, '')
-    if (value != value2) {
-      if (dedupe(value2)) {
-        runTest(value2, expected)
-      }
+  // Test without whitespace.
+  const value2 = value.replace(/\s/g, '')
+  if (value != value2) match(value2, expected)
+})
+
+test('multi-line', (t) => {
+  const tests = [
+    ['// \n', false],
+    ['/* \n', true],
+    ['/* \n 0', true],
+    ['/* \n\n', true],
+    ['/* \n\n */', false],
+  ]
+  tests.forEach(([value, expected]) => {
+    if (isOpenComment(value) != expected) {
+      t.fail('"' + value.replace(/\n/g, '\\n') + '" should return ' + expected)
     }
   })
-}
-
-function runTest(value, expected) {
-  const result = isOpenComment(value)
-  if (result == expected) {
-    console.log(huey.green('Pass: ') + value)
-  } else {
-    console.log(huey.red('Fail: ') + value + huey.gray(' != ' + expected))
-  }
-}
+})

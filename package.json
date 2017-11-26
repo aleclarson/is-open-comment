@@ -2,7 +2,7 @@
   "name": "is-open-comment",
   "version": "0.0.1",
   "devDependencies": {
-    "huey": "aleclarson/huey#0.0.1"
+    "testpass": "0.0.x"
   },
   "repository": {
     "type": "git",

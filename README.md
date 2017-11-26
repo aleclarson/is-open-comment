@@ -23,12 +23,8 @@ Look at `test.js` for all supported edge cases.
 npm i
 
 # Run the tests once.
-./test.js
+./test.js -v
 
 # Run the tests when a file changes.
-./test.js -w
-
-# Check for duplicate tests.
-./test.js -d
+./test.js -w -v
 ```
-
