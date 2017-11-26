@@ -4,7 +4,6 @@
 Returns `true` if a string opens a comment without closing it.
 
 - No runtime dependencies.
-- Multi-line strings are not supported.
 - Comment syntax within a string literal causes a false positive.
 
 ```js

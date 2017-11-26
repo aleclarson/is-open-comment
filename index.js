@@ -1,6 +1,8 @@
 
 function isOpenComment(code) {
-  const line = code.indexOf('//')
+  const lineBreak = code.lastIndexOf('\n')
+  const lastLine = ~lineBreak ? code.slice(lineBreak + 1) : code
+  const line = lastLine.indexOf('//')
   const blockOpen = code.indexOf('/*')
   if (blockOpen == -1) {
     return line != -1
