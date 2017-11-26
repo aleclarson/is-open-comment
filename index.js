@@ -10,19 +10,23 @@ function isOpenComment(code) {
   if (line != -1 && line < blockOpen) {
     return true
   } else {
-    return evalTags(findTags(code))
+    return evalTags(findTags(code), lineBreak)
   }
 }
 
 module.exports = isOpenComment
 
-function evalTags(tags) {
+function evalTags(tags, lineBreak) {
   let openIndex = -1
   let closeIndex = -2
   for (const index in tags) {
     const tag = tags[index]
     // Look for //
     if (tag == '//') {
+      // Must be on last line
+      if (index < lineBreak) {
+        continue
+      }
       // Protect against /* *//
       if (index - closeIndex > 1) {
         if (openIndex == -1) {
