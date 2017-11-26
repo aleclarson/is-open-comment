@@ -1,5 +1,5 @@
 
-# is-open-comment v0.0.1 
+# is-open-comment v0.1.0
 
 Returns `true` if a string opens a comment without closing it.
 
