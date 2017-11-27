@@ -1,6 +1,6 @@
 {
   "name": "is-open-comment",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "devDependencies": {
     "testpass": "0.0.x"
   },

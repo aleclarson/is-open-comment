@@ -1,5 +1,5 @@
 
-# is-open-comment v0.1.0
+# is-open-comment v0.1.1
 
 Returns `true` if a string opens a comment without closing it.
 
@@ -12,6 +12,8 @@ const isOpenComment = require('is-open-comment')
 isOpenComment('//')       // => true
 isOpenComment('/*')       // => true
 isOpenComment('/* // */') // => false
+isOpenComment('/* \n')    // => true
+isOpenComment('// \n')    // => false
 ```
 
 Look at `test.js` for all supported edge cases.
