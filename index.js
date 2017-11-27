@@ -17,36 +17,44 @@ function isOpenComment(code) {
 module.exports = isOpenComment
 
 function evalTags(tags, lineBreak) {
+  let canOpen = true
   let openIndex = -1
   let closeIndex = -2
   for (const index in tags) {
     const tag = tags[index]
-    // Look for //
-    if (tag == '//') {
-      // Must be on last line
-      if (index < lineBreak) {
-        continue
-      }
-      // Protect against /* *//
-      if (index - closeIndex > 1) {
-        if (openIndex == -1) {
-          return true
-        }
-      }
-    }
-    // Look for /*
-    else if (openIndex < 0) {
+    if (canOpen) {
       if (tag == '/*') {
-        // Protect against /* */*
+        // Protect against "/* */*"
         if (index - closeIndex > 1) {
+          // Ignore "/*" and "//" until "*/" is found
+          canOpen = false
           openIndex = index
         }
       }
+      else if (tag == '//') {
+        // Protect against "/* *//"
+        if (index - closeIndex < 2) {
+          continue
+        }
+        // Return true if on last line
+        if (index > lineBreak) {
+          return true
+        } else {
+          // Ignore "/*" and "//" on same line
+          canOpen = false
+        }
+      }
     }
-    // Look for */
+    else if (tag == '\n') {
+      // Line break only closes "//"
+      if (openIndex == -1) {
+        canOpen = true
+      }
+    }
     else if (tag == '*/') {
-      // Protect against /*/
+      // Protect against "/*/"
       if (index - openIndex > 1) {
+        canOpen = true
         openIndex = -1
         closeIndex = index
       }
@@ -58,6 +66,7 @@ function evalTags(tags, lineBreak) {
 // Returns a sparse array of comment tags
 function findTags(code) {
   const tags = []
+  findTag(code, '\n', tags)
   findTag(code, '//', tags)
   findTag(code, '/*', tags)
   findTag(code, '*/', tags)

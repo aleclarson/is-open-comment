@@ -69,6 +69,7 @@ test('multi-line', (t) => {
     ['/* \n\n', true],
     ['/* \n\n */', false],
     ['// \n /* */', false],
+    ['// /* \n', false],
   ]
   tests.forEach(([value, expected]) => {
     if (isOpenComment(value) != expected) {
